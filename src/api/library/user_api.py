@@ -90,61 +90,6 @@ async def login(
         user=user
     )
 
-
-@router.post("/login/email", response_model=TokenResponse)
-async def login_with_email(
-    login_data: LoginRequest = Body(...),
-    db: AsyncSession = Depends(create_database_session),
-    service: UserService = Depends(get_user_service),
-):
-    """
-    Authenticate user with email and return JWT token.
-    """
-    user = await service.login_with_email(db, email=login_data.username, password=login_data.password)
-    
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid credentials",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    
-    access_token = create_access_token(data={"sub": str(user.id)})
-    
-    return TokenResponse(
-        access_token=access_token,
-        token_type="bearer",
-        user=user
-    )
-
-
-@router.post("/login/username", response_model=TokenResponse)
-async def login_with_username(
-    login_data: LoginRequest = Body(...),
-    db: AsyncSession = Depends(create_database_session),
-    service: UserService = Depends(get_user_service),
-):
-    """
-    Authenticate user with username and return JWT token.
-    """
-    user = await service.login_with_username(db, username=login_data.username, password=login_data.password)
-    
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid credentials",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    
-    access_token = create_access_token(data={"sub": str(user.id)})
-    
-    return TokenResponse(
-        access_token=access_token,
-        token_type="bearer",
-        user=user
-    )
-
-
 @router.get("/search", response_model=List[UserDTO])
 async def search_users(
     search: str = Query(..., min_length=1),
