@@ -1,6 +1,5 @@
 from sqlalchemy import Column, DateTime
 from sqlalchemy.sql import func
-
 class TimestampMixin:
     """Mixin that adds timestamp columns to a model."""
     

@@ -1,7 +1,6 @@
-from sqlalchemy import Column, UUID, String
+from sqlalchemy import Column, UUID, ForeignKey, String, Table
 
 from src.utils.db_utils import Base
-
 
 class SampleModel(Base):
     __tablename__ = "sample_model"

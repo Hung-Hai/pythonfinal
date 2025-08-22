@@ -1,0 +1,6 @@
+"name";"description"
+"Admin";"Full system access including user management"
+"Librarian";"Can manage book inventory and checkouts"
+"Member";"Regular library member with borrowing privileges"
+"Student";"Special member status with extended loan periods"
+"Guest";"Limited access for temporary users"
