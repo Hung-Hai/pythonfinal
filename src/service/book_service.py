@@ -44,3 +44,40 @@ class BookService(BaseService[BookCreateDTO, BookUpdateDTO, BookDTO, BookReposit
             **book.__dict__,
             "authors": authors
         })
+
+    async def get_books_by_author(
+        self, 
+        db: AsyncSession, 
+        author_name: str, 
+        skip: int = 0, 
+        limit: int = 100
+    ) -> List[BookDTO]:
+        """Get books by specific author name"""
+        books = await self.repo.get_by_author(db, author_name=author_name, skip=skip, limit=limit)
+        return [self._book_to_dto(book) for book in books]
+
+    async def get_books_by_genre(
+        self, 
+        db: AsyncSession, 
+        genre: str, 
+        skip: int = 0, 
+        limit: int = 100
+    ) -> List[BookDTO]:
+        """Get books by genre"""
+        books = await self.repo.get_by_genre(db, genre=genre, skip=skip, limit=limit)
+        return [self._book_to_dto(book) for book in books]
+
+    async def get_books_by_year(
+        self, 
+        db: AsyncSession, 
+        year: int, 
+        skip: int = 0, 
+        limit: int = 100
+    ) -> List[BookDTO]:
+        """Get books published in a specific year"""
+        books = await self.repo.get_by_year(db, year=year, skip=skip, limit=limit)
+        return [self._book_to_dto(book) for book in books]
+
+    async def get_count(self, db: AsyncSession) -> int:
+        """Get total count of books"""
+        return await self.repo.get_count(db)

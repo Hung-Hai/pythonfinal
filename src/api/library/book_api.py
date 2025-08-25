@@ -35,8 +35,6 @@ async def search_books(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"No books found with {field}={value}")
     return books
 
-# Add these to src/api/book_api.py
-
 @router.get("/author/{author_name}", response_model=List[BookDTO])
 async def get_books_by_author(
     author_name: str,

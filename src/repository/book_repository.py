@@ -1,10 +1,13 @@
 # src/repositories/book_repository.py
 from typing import Any, List, Optional
 from uuid import UUID
+from sqlalchemy import func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.orm import selectinload
 
+from src.models.author_books_models import AuthorBookModel
+from src.models.author_models import AuthorModel
 from src.models.books_models import BooksModel
 from src.dto.book_dto import BookCreateDTO, BookUpdateDTO, BookDTO, AuthorBookLinkDTO
 from src.repository.base_repository import BaseRepository
@@ -101,3 +104,63 @@ class BookRepository(BaseRepository[BooksModel, BookCreateDTO, BookUpdateDTO, Bo
 
         result = await db.execute(query)
         return [self._model_to_dto(row) for row in result.scalars().all()]
+
+    async def get_by_author(
+        self, 
+        db: AsyncSession, 
+        author_name: str, 
+        skip: int = 0, 
+        limit: int = 100
+    ):
+        """Get books by author name"""
+        query = (
+            select(self.model)
+            .join(AuthorBookModel, self.model.id == AuthorBookModel.book_id)
+            .join(AuthorModel, AuthorBookModel.author_id == AuthorModel.id)
+            .where(AuthorModel.first_name.ilike(f"%{author_name}%") | 
+                AuthorModel.last_name.ilike(f"%{author_name}%"))
+            .offset(skip)
+            .limit(limit)
+        )
+        result = await db.execute(query)
+        return result.scalars().all()
+
+    async def get_by_genre(
+        self, 
+        db: AsyncSession, 
+        genre: str, 
+        skip: int = 0, 
+        limit: int = 100
+    ):
+        """Get books by genre"""
+        query = (
+            select(self.model)
+            .where(self.model.genre.ilike(f"%{genre}%"))
+            .offset(skip)
+            .limit(limit)
+        )
+        result = await db.execute(query)
+        return result.scalars().all()
+
+    async def get_by_year(
+        self, 
+        db: AsyncSession, 
+        year: int, 
+        skip: int = 0, 
+        limit: int = 100
+    ):
+        """Get books published in a specific year"""
+        query = (
+            select(self.model)
+            .where(self.model.publication_year == year)
+            .offset(skip)
+            .limit(limit)
+        )
+        result = await db.execute(query)
+        return result.scalars().all()
+
+    async def get_count(self, db: AsyncSession) -> int:
+        """Get total count of books"""
+        query = select(func.count()).select_from(self.model)
+        result = await db.execute(query)
+        return result.scalar()

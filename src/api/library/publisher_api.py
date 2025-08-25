@@ -47,7 +47,6 @@ async def get_publisher_with_books(
     publisher = await service.get_with_books(db, publisher_id)
     if not publisher:
         return None
-    # FastAPI + Pydantic will map to PublisherWithBooksDTO since we have relationship
     return publisher
 
 
